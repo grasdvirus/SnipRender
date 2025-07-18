@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -112,11 +111,11 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
 
     if (reactCode) {
       reactScripts = `
-        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
       `;
       babelScript = `<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>`;
-      processedJs += `\n<script type="text/babel">${reactCode}</script>`;
+      processedJs = `<script type="text/babel" data-presets="react">${reactCode}</script>`;
     } else {
       processedJs = `<script>${jsCode}</script>`
     }
@@ -240,13 +239,12 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
 
   const renderEditor = (tab: EditorTab) => {
     const { code, setCode, lang } = codeMap[tab];
-    const lineCount = code.split('\\n').length;
     return (
       <div className="editor-container">
         <Editor
           value={code}
           onValueChange={newCode => setCode(newCode)}
-          highlight={code => highlight(code, lang, tab)}
+          highlight={code => highlight(code, lang, tab).split('\\n').map(line => `<span class="token-line">${line}</span>`).join('\\n')}
           padding={10}
           className="editor"
           textareaId={`${tab}-editor`}
