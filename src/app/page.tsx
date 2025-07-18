@@ -144,7 +144,11 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
           window.parent.postMessage({ type: 'error', message: event.message }, '*');
         });
         window.addEventListener('unhandledrejection', function(event) {
-          window.parent.postMessage({ type: 'error', message: event.reason.message }, '*');
+          let message = event.reason;
+          if (event.reason instanceof Error) {
+            message = event.reason.message;
+          }
+          window.parent.postMessage({ type: 'error', message: message }, '*');
         });
       </script>
     `;
@@ -412,11 +416,18 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
                 <TabsTrigger value="js" className="text-yellow-500 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 rounded-none">JS</TabsTrigger>
                 <TabsTrigger value="react" className="text-cyan-400 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-cyan-400 rounded-none">REACT</TabsTrigger>
               </TabsList>
-              {Object.keys(codeMap).map(key => (
-                <TabsContent key={key} value={key} className="flex-1 m-0 overflow-auto">
-                  {renderEditor(key as EditorTab)}
-                </TabsContent>
-              ))}
+              <TabsContent value="html" className="flex-1 m-0 overflow-auto">
+                {renderEditor('html')}
+              </TabsContent>
+              <TabsContent value="css" className="flex-1 m-0 overflow-auto">
+                {renderEditor('css')}
+              </TabsContent>
+              <TabsContent value="js" className="flex-1 m-0 overflow-auto">
+                {renderEditor('js')}
+              </TabsContent>
+              <TabsContent value="react" className="flex-1 m-0 overflow-auto">
+                {renderEditor('react')}
+              </TabsContent>
             </Tabs>
           </div>
           <div className={cn(
