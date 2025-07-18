@@ -223,6 +223,37 @@ button:hover {
             <FileCode className="w-7 h-7 text-primary" />
             <h1 className="text-xl font-bold">Code Canvas</h1>
           </div>
+          <div className="flex-1 flex justify-center">
+            <ToggleGroup type="single" value={viewMode} onValueChange={(value) => { if(value) setViewMode(value as ViewMode)}} size="sm">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToggleGroupItem value="split" aria-label="Split view">
+                    <Layout className="h-4 w-4" />
+                    <span className="ml-2 hidden sm:inline">Vue Partagée</span>
+                  </ToggleGroupItem>
+                </TooltipTrigger>
+                <TooltipContent><p>Vue Partagée</p></TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToggleGroupItem value="code" aria-label="Code view">
+                    <Code2 className="h-4 w-4" />
+                    <span className="ml-2 hidden sm:inline">Code</span>
+                  </ToggleGroupItem>
+                </TooltipTrigger>
+                <TooltipContent><p>Vue Code</p></TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <ToggleGroupItem value="preview" aria-label="Preview view">
+                    <Eye className="h-4 w-4" />
+                    <span className="ml-2 hidden sm:inline">Aperçu</span>
+                  </ToggleGroupItem>
+                </TooltipTrigger>
+                <TooltipContent><p>Vue Aperçu</p></TooltipContent>
+              </Tooltip>
+            </ToggleGroup>
+          </div>
           <div className="flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -265,7 +296,7 @@ button:hover {
           </div>
         </header>
         <main className={cn(
-          "flex-1 grid gap-0 border-t",
+          "flex-1 grid gap-0",
           viewMode === 'split' && 'grid-cols-1 lg:grid-cols-2',
           viewMode === 'code' && 'grid-cols-1',
           viewMode === 'preview' && 'grid-cols-1',
@@ -297,40 +328,6 @@ button:hover {
             "flex flex-col h-full border-l bg-muted/20",
              viewMode === 'code' && 'hidden'
           )}>
-             <div className="flex items-center justify-between gap-2 px-4 py-2 border-b text-sm font-semibold text-muted-foreground">
-                <div className="flex items-center gap-2">
-                    <PanelLeft className="w-4 h-4" />
-                    <span>Aperçu en direct</span>
-                </div>
-                <div>
-                    <ToggleGroup type="single" value={viewMode} onValueChange={(value) => { if(value) setViewMode(value as ViewMode)}}>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <ToggleGroupItem value="split" aria-label="Split view">
-                                    <Layout className="h-4 w-4" />
-                                </ToggleGroupItem>
-                            </TooltipTrigger>
-                            <TooltipContent><p>Vue partagée</p></TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <ToggleGroupItem value="code" aria-label="Code view">
-                                    <Code2 className="h-4 w-4" />
-                                </ToggleGroupItem>
-                            </TooltipTrigger>
-                            <TooltipContent><p>Vue code</p></TooltipContent>
-                        </Tooltip>
-                         <Tooltip>
-                            <TooltipTrigger asChild>
-                                <ToggleGroupItem value="preview" aria-label="Preview view">
-                                    <Eye className="h-4 w-4" />
-                                </ToggleGroupItem>
-                            </TooltipTrigger>
-                             <TooltipContent><p>Vue aperçu</p></TooltipContent>
-                        </Tooltip>
-                    </ToggleGroup>
-                </div>
-             </div>
              <div className="flex-1 p-2">
                 <iframe
                     ref={iframeRef}
