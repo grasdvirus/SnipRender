@@ -3,8 +3,11 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Canevas de Code',
+  title: 'snip-render',
   description: 'Un éditeur de code en temps réel avec aperçu en direct.',
+  icons: {
+    icon: '/favico.png',
+  },
 };
 
 export default function RootLayout({
