@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,6 +11,7 @@ type Snippet = {
   html: string;
   css: string;
   js: string;
+  react: string;
   date: string;
 };
 
@@ -64,3 +66,5 @@ export function LoadSnippetDialog({ open, onOpenChange, snippets, onLoad, onDele
     </Dialog>
   );
 }
+
+    

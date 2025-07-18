@@ -21,62 +21,49 @@ type Snippet = {
   html: string;
   css: string;
   js: string;
+  react: string;
   date: string;
 };
 
 type ViewMode = "split" | "code" | "preview";
 
 export default function CodeCanvasPage() {
-  const [htmlCode, setHtmlCode] = useState(`<div class="container">
-  <h1>Bonjour le Monde !</h1>
-  <p>Bienvenue dans l'éditeur de code</p>
-  <button onclick="changeColor()">Changer la couleur</button>
-</div>`);
+  const [htmlCode, setHtmlCode] = useState(`<div id="root"></div>`);
   
-  const [cssCode, setCssCode] = useState(`.container {
+  const [cssCode, setCssCode] = useState(`body {
   font-family: sans-serif;
-  text-align: center;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 10px;
-  color: white;
-  margin: 20px;
-  transition: background 0.5s ease;
 }
-h1 {
-  font-size: 2.5em;
-  margin-bottom: 10px;
+.container {
+  padding: 20px;
+  background: #f0f0f0;
+  border-radius: 10px;
 }
 button {
-  background: #fff;
-  color: #333;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
   margin-top: 10px;
-  transition: all 0.3s;
-}
-button:hover {
-  background: #f0f0f0;
-  transform: translateY(-2px);
+  padding: 8px 16px;
+  cursor: pointer;
 }`);
   
-  const [jsCode, setJsCode] = useState(`function changeColor() {
-  const container = document.querySelector('.container');
-  const colors = [
-    'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
-  ];
-  
-  const randomColor = colors[Math.floor(Math.random() * colors.length)];
-  container.style.background = randomColor;
-}`);
+  const [jsCode, setJsCode] = useState(``);
 
-  const [activeTab, setActiveTab] = useState('html');
+  const [reactCode, setReactCode] = useState(`const App = () => {
+  const [count, setCount] = React.useState(0);
+
+  return (
+    <div className="container">
+      <h1>Composant React</h1>
+      <p>Compteur : {count}</p>
+      <button onClick={() => setCount(count + 1)}>
+        Incrémenter
+      </button>
+    </div>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById('root'));`);
+
+  const [activeTab, setActiveTab] = useState('react');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [savedSnippets, setSavedSnippets] = useState<Snippet[]>([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -108,17 +95,33 @@ button:hover {
   const generatePreview = () => {
     const iframe = iframeRef.current;
     if (!iframe) return;
+    
+    let processedJs = jsCode;
+    let finalHtml = htmlCode;
+    let babelScript = '';
+
+    if (reactCode) {
+      babelScript = `<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>`;
+      processedJs += `\n<script type="text/babel">${reactCode}</script>`
+    } else {
+      processedJs = `<script>${jsCode}</script>`
+    }
+
+
     const combinedCode = `
       <!DOCTYPE html>
       <html lang="fr">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+        ${babelScript}
         <style>${cssCode}</style>
       </head>
       <body>
-        ${htmlCode}
-        <script>${jsCode}<\/script>
+        ${finalHtml}
+        ${processedJs}
       </body>
       </html>`;
     iframe.srcdoc = combinedCode;
@@ -127,14 +130,15 @@ button:hover {
   useEffect(() => {
     const debounce = setTimeout(() => {
       generatePreview();
-    }, 300);
+    }, 500);
     return () => clearTimeout(debounce);
-  }, [htmlCode, cssCode, jsCode]);
+  }, [htmlCode, cssCode, jsCode, reactCode]);
 
   const resetCode = () => {
     setHtmlCode('');
     setCssCode('');
     setJsCode('');
+    setReactCode('');
     toast({ title: "Code Réinitialisé", description: "L'éditeur a été vidé." });
   };
 
@@ -145,6 +149,7 @@ button:hover {
       html: htmlCode,
       css: cssCode,
       js: jsCode,
+      react: reactCode,
       date: new Date().toLocaleDateString(),
     };
     const updatedSnippets = [...savedSnippets, newSnippet];
@@ -158,6 +163,7 @@ button:hover {
     setHtmlCode(snippet.html);
     setCssCode(snippet.css);
     setJsCode(snippet.js);
+    setReactCode(snippet.react || '');
     setShowLoadModal(false);
     toast({ title: "Extrait Chargé", description: `"${snippet.name}" a été chargé.` });
   };
@@ -180,7 +186,7 @@ button:hover {
 </head>
 <body>
   ${htmlCode}
-  <script>${jsCode}<\/script>
+  <script>${jsCode}</script>
 </body>
 </html>`;
     navigator.clipboard.writeText(fullCode);
@@ -198,7 +204,7 @@ button:hover {
 </head>
 <body>
   ${htmlCode}
-  <script>${jsCode}<\/script>
+  <script>${jsCode}</script>
 </body>
 </html>`;
     const blob = new Blob([fullCode], { type: 'text/html' });
@@ -212,8 +218,8 @@ button:hover {
     URL.revokeObjectURL(url);
   };
   
-  const codeMap = { html: htmlCode, css: cssCode, js: jsCode };
-  const setCodeMap = { html: setHtmlCode, css: setCssCode, js: setJsCode };
+  const codeMap = { html: htmlCode, css: cssCode, js: jsCode, react: reactCode };
+  const setCodeMap = { html: setHtmlCode, css: setCssCode, js: setJsCode, react: setReactCode };
 
   return (
     <TooltipProvider delayDuration={100}>
@@ -250,7 +256,7 @@ button:hover {
                     <span className="ml-2 hidden sm:inline">Aperçu</span>
                   </ToggleGroupItem>
                 </TooltipTrigger>
-                <TooltipContent><p>Vue Aperçu</p></TooltipContent>
+                <TooltipContent><p>Aperçu en direct</p></TooltipContent>
               </Tooltip>
             </ToggleGroup>
           </div>
@@ -310,6 +316,7 @@ button:hover {
                 <TabsTrigger value="html" className="text-orange-500 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-orange-500 rounded-none">HTML</TabsTrigger>
                 <TabsTrigger value="css" className="text-blue-500 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none">CSS</TabsTrigger>
                 <TabsTrigger value="js" className="text-yellow-500 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 rounded-none">JS</TabsTrigger>
+                <TabsTrigger value="react" className="text-cyan-400 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-cyan-400 rounded-none">REACT</TabsTrigger>
               </TabsList>
               {Object.keys(codeMap).map(key => (
                 <TabsContent key={key} value={key} className="flex-1 m-0">
@@ -344,3 +351,5 @@ button:hover {
     </TooltipProvider>
   );
 }
+
+    
