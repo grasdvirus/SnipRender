@@ -5,7 +5,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Play, RotateCcw, Save, Copy, Moon, Sun, Download, Upload, Trash2, Code, PanelLeft, FileCode, Layout, Code2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +12,13 @@ import { SaveSnippetDialog } from '@/components/save-snippet-dialog';
 import { LoadSnippetDialog } from '@/components/load-snippet-dialog';
 import { cn } from '@/lib/utils';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import Editor from 'react-simple-code-editor';
+import { highlight, languages } from 'prismjs/components/prism-core';
+import 'prismjs/components/prism-clike';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-markup';
+import 'prismjs/components/prism-jsx';
 
 
 type Snippet = {
@@ -26,6 +32,8 @@ type Snippet = {
 };
 
 type ViewMode = "split" | "code" | "preview";
+
+type EditorTab = 'html' | 'css' | 'js' | 'react';
 
 export default function CodeCanvasPage() {
   const [htmlCode, setHtmlCode] = useState(`<div id="root"></div>`);
@@ -63,7 +71,7 @@ button {
 
 ReactDOM.render(<App />, document.getElementById('root'));`);
 
-  const [activeTab, setActiveTab] = useState('react');
+  const [activeTab, setActiveTab] = useState<EditorTab>('react');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [savedSnippets, setSavedSnippets] = useState<Snippet[]>([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -222,8 +230,29 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
     URL.revokeObjectURL(url);
   };
   
-  const codeMap = { html: htmlCode, css: cssCode, js: jsCode, react: reactCode };
-  const setCodeMap = { html: setHtmlCode, css: setCssCode, js: setJsCode, react: setReactCode };
+  const codeMap = {
+    html: { code: htmlCode, setCode: setHtmlCode, lang: languages.markup },
+    css: { code: cssCode, setCode: setCssCode, lang: languages.css },
+    js: { code: jsCode, setCode: setJsCode, lang: languages.js },
+    react: { code: reactCode, setCode: setReactCode, lang: languages.jsx }
+  };
+
+  const renderEditor = (tab: EditorTab) => {
+    const { code, setCode, lang } = codeMap[tab];
+    return (
+      <div className="editor-container">
+        <Editor
+          value={code}
+          onValueChange={newCode => setCode(newCode)}
+          highlight={code => highlight(code, lang, tab)}
+          padding={10}
+          className="editor"
+          textareaId={`${tab}-editor`}
+          autoFocus={tab === activeTab}
+        />
+      </div>
+    );
+  };
 
   return (
     <TooltipProvider delayDuration={100}>
@@ -315,7 +344,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
             "flex flex-col h-full",
             viewMode === 'preview' && 'hidden'
           )}>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+            <Tabs value={activeTab} onValueChange={(tab) => setActiveTab(tab as EditorTab)} className="flex-1 flex flex-col">
               <TabsList className="rounded-none bg-transparent justify-start px-2 pt-2 border-b">
                 <TabsTrigger value="html" className="text-orange-500 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-orange-500 rounded-none">HTML</TabsTrigger>
                 <TabsTrigger value="css" className="text-blue-500 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-500 rounded-none">CSS</TabsTrigger>
@@ -323,14 +352,8 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
                 <TabsTrigger value="react" className="text-cyan-400 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-cyan-400 rounded-none">REACT</TabsTrigger>
               </TabsList>
               {Object.keys(codeMap).map(key => (
-                <TabsContent key={key} value={key} className="flex-1 m-0">
-                  <Textarea
-                    value={codeMap[key as keyof typeof codeMap]}
-                    onChange={(e) => setCodeMap[key as keyof typeof setCodeMap](e.target.value)}
-                    className="w-full h-full resize-none font-mono text-sm p-4 border-0 rounded-none focus-visible:ring-0 bg-card"
-                    placeholder={`Écrivez votre code ${key.toUpperCase()} ici...`}
-                    spellCheck={false}
-                  />
+                <TabsContent key={key} value={key} className="flex-1 m-0 overflow-auto">
+                  {renderEditor(key as EditorTab)}
                 </TabsContent>
               ))}
             </Tabs>

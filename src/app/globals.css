@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'prismjs/themes/prism-okaidia.css';
 
 @layer base {
   :root {
@@ -56,4 +57,45 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Styles for react-simple-code-editor */
+.editor-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background: #272822; /* okaidia theme background */
+    font-family: 'Fira Code', 'Dank Mono', 'Operator Mono', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.editor-container .editor {
+    caret-color: white;
+}
+
+.editor-container .editor:focus-visible {
+    outline: none;
+}
+
+
+/* Line numbers */
+.editor-container pre {
+    padding-left: 60px !important;
+    counter-reset: line;
+}
+
+.editor-container .editor-line-number {
+    position: absolute;
+    left: 0;
+    width: 50px;
+    padding-right: 10px;
+    text-align: right;
+    color: #888;
+    user-select: none;
+}
+
+.editor-container .editor-line-number::before {
+    counter-increment: line;
+    content: counter(line);
 }
