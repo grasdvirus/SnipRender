@@ -240,6 +240,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
 
   const renderEditor = (tab: EditorTab) => {
     const { code, setCode, lang } = codeMap[tab];
+    const lineCount = code.split('\\n').length;
     return (
       <div className="editor-container">
         <Editor
@@ -250,6 +251,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
           className="editor"
           textareaId={`${tab}-editor`}
           autoFocus={tab === activeTab}
+          preClassName="editor-pre"
         />
       </div>
     );
