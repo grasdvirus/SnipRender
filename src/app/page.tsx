@@ -1,7 +1,8 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, RotateCcw, Save, Copy, Moon, Sun, Download, Upload, Trash2, Code, PanelLeft, FileCode } from 'lucide-react';
+import { Play, RotateCcw, Save, Copy, Moon, Sun, Download, Upload, Trash2, Code, PanelLeft, FileCode, Layout, Code2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,6 +11,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useToast } from '@/hooks/use-toast';
 import { SaveSnippetDialog } from '@/components/save-snippet-dialog';
 import { LoadSnippetDialog } from '@/components/load-snippet-dialog';
+import { cn } from '@/lib/utils';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+
 
 type Snippet = {
   id: number;
@@ -19,6 +23,8 @@ type Snippet = {
   js: string;
   date: string;
 };
+
+type ViewMode = "split" | "code" | "preview";
 
 export default function CodeCanvasPage() {
   const [htmlCode, setHtmlCode] = useState(`<div class="container">
@@ -75,6 +81,7 @@ button:hover {
   const [savedSnippets, setSavedSnippets] = useState<Snippet[]>([]);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("split");
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { toast } = useToast();
 
@@ -257,8 +264,16 @@ button:hover {
             </Tooltip>
           </div>
         </header>
-        <main className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-0 border-t">
-          <div className="flex flex-col h-full">
+        <main className={cn(
+          "flex-1 grid gap-0 border-t",
+          viewMode === 'split' && 'grid-cols-1 lg:grid-cols-2',
+          viewMode === 'code' && 'grid-cols-1',
+          viewMode === 'preview' && 'grid-cols-1',
+        )}>
+          <div className={cn(
+            "flex flex-col h-full",
+            viewMode === 'preview' && 'hidden'
+          )}>
             <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
               <TabsList className="rounded-none bg-transparent justify-start px-2 pt-2 border-b">
                 <TabsTrigger value="html" className="text-orange-500 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-orange-500 rounded-none">HTML</TabsTrigger>
@@ -278,10 +293,43 @@ button:hover {
               ))}
             </Tabs>
           </div>
-          <div className="flex flex-col h-full border-l bg-muted/20">
-             <div className="flex items-center gap-2 px-4 py-2 border-b text-sm font-semibold text-muted-foreground">
-                <PanelLeft className="w-4 h-4" />
-                <span>Live Preview</span>
+          <div className={cn(
+            "flex flex-col h-full border-l bg-muted/20",
+             viewMode === 'code' && 'hidden'
+          )}>
+             <div className="flex items-center justify-between gap-2 px-4 py-2 border-b text-sm font-semibold text-muted-foreground">
+                <div className="flex items-center gap-2">
+                    <PanelLeft className="w-4 h-4" />
+                    <span>Aperçu en direct</span>
+                </div>
+                <div>
+                    <ToggleGroup type="single" value={viewMode} onValueChange={(value) => { if(value) setViewMode(value as ViewMode)}}>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <ToggleGroupItem value="split" aria-label="Split view">
+                                    <Layout className="h-4 w-4" />
+                                </ToggleGroupItem>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Vue partagée</p></TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <ToggleGroupItem value="code" aria-label="Code view">
+                                    <Code2 className="h-4 w-4" />
+                                </ToggleGroupItem>
+                            </TooltipTrigger>
+                            <TooltipContent><p>Vue code</p></TooltipContent>
+                        </Tooltip>
+                         <Tooltip>
+                            <TooltipTrigger asChild>
+                                <ToggleGroupItem value="preview" aria-label="Preview view">
+                                    <Eye className="h-4 w-4" />
+                                </ToggleGroupItem>
+                            </TooltipTrigger>
+                             <TooltipContent><p>Vue aperçu</p></TooltipContent>
+                        </Tooltip>
+                    </ToggleGroup>
+                </div>
              </div>
              <div className="flex-1 p-2">
                 <iframe
