@@ -33,7 +33,7 @@ export function LoadSnippetDialog({ open, onOpenChange, snippets, onLoad, onDele
             Sélectionnez un extrait précédemment sauvegardé pour le charger dans l'éditeur.
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[60vh] -mx-4 scroll-hover">
+        <ScrollArea className="max-h-[60vh] -mx-4">
           <div className="px-4 space-y-2">
             {snippets.length > 0 ? (
               snippets.slice().reverse().map((snippet, index) => (

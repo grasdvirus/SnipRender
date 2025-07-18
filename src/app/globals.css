@@ -59,17 +59,19 @@
   }
 }
 
-/* Custom scrollbar styles */
-.scroll-hover::-webkit-scrollbar {
+/* Custom global scrollbar styles */
+::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
-.scroll-hover::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background-color: rgba(100, 100, 255, 0.2);
   border-radius: 3px;
 }
-.scroll-hover:hover::-webkit-scrollbar-thumb {
+*:hover::-webkit-scrollbar-thumb {
   background-color: rgba(100, 100, 255, 0.4);
 }
+
 
 /* Styles for react-simple-code-editor */
 .editor-container {

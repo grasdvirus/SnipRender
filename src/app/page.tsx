@@ -304,7 +304,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
   const renderEditor = (tab: EditorTab) => {
     const { code, setCode, lang } = codeMap[tab];
     return (
-      <div className="editor-container scroll-hover">
+      <div className="editor-container">
         <Editor
           value={code}
           onValueChange={newCode => setCode(newCode)}
@@ -400,7 +400,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
           </div>
         </header>
         <main className={cn(
-          "flex-1 grid gap-0",
+          "flex-1 grid gap-0 overflow-hidden",
           viewMode === 'split' && 'grid-cols-1 lg:grid-cols-2',
           viewMode === 'code' && 'grid-cols-1',
           viewMode === 'preview' && 'grid-cols-1',
@@ -416,18 +416,12 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
                 <TabsTrigger value="js" className="text-yellow-500 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-yellow-500 rounded-none">JS</TabsTrigger>
                 <TabsTrigger value="react" className="text-cyan-400 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-cyan-400 rounded-none">REACT</TabsTrigger>
               </TabsList>
-              <TabsContent value="html" className="flex-1 m-0 overflow-auto">
-                {renderEditor('html')}
-              </TabsContent>
-              <TabsContent value="css" className="flex-1 m-0 overflow-auto">
-                {renderEditor('css')}
-              </TabsContent>
-              <TabsContent value="js" className="flex-1 m-0 overflow-auto">
-                {renderEditor('js')}
-              </TabsContent>
-              <TabsContent value="react" className="flex-1 m-0 overflow-auto">
-                {renderEditor('react')}
-              </TabsContent>
+              <div className="flex-1 overflow-auto">
+                <div className={cn("h-full", activeTab === 'html' ? 'block' : 'hidden')}>{renderEditor('html')}</div>
+                <div className={cn("h-full", activeTab === 'css' ? 'block' : 'hidden')}>{renderEditor('css')}</div>
+                <div className={cn("h-full", activeTab === 'js' ? 'block' : 'hidden')}>{renderEditor('js')}</div>
+                <div className={cn("h-full", activeTab === 'react' ? 'block' : 'hidden')}>{renderEditor('react')}</div>
+              </div>
             </Tabs>
           </div>
           <div className={cn(
