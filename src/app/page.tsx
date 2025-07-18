@@ -28,9 +28,9 @@ type ViewMode = "split" | "code" | "preview";
 
 export default function CodeCanvasPage() {
   const [htmlCode, setHtmlCode] = useState(`<div class="container">
-  <h1>Hello World!</h1>
-  <p>Welcome to the code editor</p>
-  <button onclick="changeColor()">Change Color</button>
+  <h1>Bonjour le Monde !</h1>
+  <p>Bienvenue dans l'éditeur de code</p>
+  <button onclick="changeColor()">Changer la couleur</button>
 </div>`);
   
   const [cssCode, setCssCode] = useState(`.container {
@@ -110,7 +110,7 @@ button:hover {
     if (!iframe) return;
     const combinedCode = `
       <!DOCTYPE html>
-      <html lang="en">
+      <html lang="fr">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -135,7 +135,7 @@ button:hover {
     setHtmlCode('');
     setCssCode('');
     setJsCode('');
-    toast({ title: "Code Reset", description: "The editor has been cleared." });
+    toast({ title: "Code Réinitialisé", description: "L'éditeur a été vidé." });
   };
 
   const saveSnippet = (name: string) => {
@@ -151,7 +151,7 @@ button:hover {
     setSavedSnippets(updatedSnippets);
     localStorage.setItem('codeSnippets', JSON.stringify(updatedSnippets));
     setShowSaveModal(false);
-    toast({ title: "Snippet Saved", description: `"${name}" has been saved.` });
+    toast({ title: "Extrait Sauvegardé", description: `"${name}" a été sauvegardé.` });
   };
 
   const loadSnippet = (snippet: Snippet) => {
@@ -159,23 +159,23 @@ button:hover {
     setCssCode(snippet.css);
     setJsCode(snippet.js);
     setShowLoadModal(false);
-    toast({ title: "Snippet Loaded", description: `"${snippet.name}" has been loaded.` });
+    toast({ title: "Extrait Chargé", description: `"${snippet.name}" a été chargé.` });
   };
 
   const deleteSnippet = (id: number) => {
     const updatedSnippets = savedSnippets.filter(s => s.id !== id);
     setSavedSnippets(updatedSnippets);
     localStorage.setItem('codeSnippets', JSON.stringify(updatedSnippets));
-    toast({ title: "Snippet Deleted", variant: "destructive" });
+    toast({ title: "Extrait Supprimé", variant: "destructive" });
   };
 
   const copyFullCode = () => {
     const fullCode = `<!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generated Code</title>
+  <title>Code Généré</title>
   <style>${cssCode}</style>
 </head>
 <body>
@@ -184,16 +184,16 @@ button:hover {
 </body>
 </html>`;
     navigator.clipboard.writeText(fullCode);
-    toast({ title: "Code Copied", description: "The full HTML has been copied to your clipboard." });
+    toast({ title: "Code Copié", description: "Le code HTML complet a été copié dans le presse-papiers." });
   };
 
   const exportHTML = () => {
     const fullCode = `<!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code Canvas Export</title>
+  <title>Exportation Canevas de Code</title>
   <style>${cssCode}</style>
 </head>
 <body>
@@ -205,7 +205,7 @@ button:hover {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'code-canvas.html';
+    a.download = 'canevas-de-code.html';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -221,22 +221,22 @@ button:hover {
         <header className="flex items-center justify-between px-4 py-2 border-b shrink-0">
           <div className="flex items-center gap-3">
             <FileCode className="w-7 h-7 text-primary" />
-            <h1 className="text-xl font-bold">Code Canvas</h1>
+            <h1 className="text-xl font-bold">Canevas de Code</h1>
           </div>
           <div className="flex-1 flex justify-center">
             <ToggleGroup type="single" value={viewMode} onValueChange={(value) => { if(value) setViewMode(value as ViewMode)}} size="sm">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <ToggleGroupItem value="split" aria-label="Split view">
+                  <ToggleGroupItem value="split" aria-label="Vue partagée">
                     <Layout className="h-4 w-4" />
-                    <span className="ml-2 hidden sm:inline">Vue Partagée</span>
+                    <span className="ml-2 hidden sm:inline">Partagée</span>
                   </ToggleGroupItem>
                 </TooltipTrigger>
                 <TooltipContent><p>Vue Partagée</p></TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <ToggleGroupItem value="code" aria-label="Code view">
+                  <ToggleGroupItem value="code" aria-label="Vue code">
                     <Code2 className="h-4 w-4" />
                     <span className="ml-2 hidden sm:inline">Code</span>
                   </ToggleGroupItem>
@@ -245,7 +245,7 @@ button:hover {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <ToggleGroupItem value="preview" aria-label="Preview view">
+                  <ToggleGroupItem value="preview" aria-label="Vue aperçu">
                     <Eye className="h-4 w-4" />
                     <span className="ml-2 hidden sm:inline">Aperçu</span>
                   </ToggleGroupItem>
@@ -259,31 +259,31 @@ button:hover {
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" onClick={() => setShowLoadModal(true)}><Upload className="w-5 h-5" /></Button>
               </TooltipTrigger>
-              <TooltipContent><p>Load Snippet</p></TooltipContent>
+              <TooltipContent><p>Charger un Extrait</p></TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" onClick={() => setShowSaveModal(true)}><Save className="w-5 h-5" /></Button>
               </TooltipTrigger>
-              <TooltipContent><p>Save Snippet</p></TooltipContent>
+              <TooltipContent><p>Sauvegarder l'Extrait</p></TooltipContent>
             </Tooltip>
              <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" onClick={copyFullCode}><Copy className="w-5 h-5" /></Button>
               </TooltipTrigger>
-              <TooltipContent><p>Copy HTML</p></TooltipContent>
+              <TooltipContent><p>Copier en HTML</p></TooltipContent>
             </Tooltip>
              <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" onClick={exportHTML}><Download className="w-5 h-5" /></Button>
               </TooltipTrigger>
-              <TooltipContent><p>Export as HTML</p></TooltipContent>
+              <TooltipContent><p>Exporter en HTML</p></TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" onClick={resetCode}><RotateCcw className="w-5 h-5" /></Button>
               </TooltipTrigger>
-              <TooltipContent><p>Reset Code</p></TooltipContent>
+              <TooltipContent><p>Réinitialiser le Code</p></TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -291,7 +291,7 @@ button:hover {
                   {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent><p>Toggle Theme</p></TooltipContent>
+              <TooltipContent><p>Changer le Thème</p></TooltipContent>
             </Tooltip>
           </div>
         </header>
@@ -317,7 +317,7 @@ button:hover {
                     value={codeMap[key as keyof typeof codeMap]}
                     onChange={(e) => setCodeMap[key as keyof typeof setCodeMap](e.target.value)}
                     className="w-full h-full resize-none font-mono text-sm p-4 border-0 rounded-none focus-visible:ring-0 bg-card"
-                    placeholder={`Write your ${key.toUpperCase()} code here...`}
+                    placeholder={`Écrivez votre code ${key.toUpperCase()} ici...`}
                     spellCheck={false}
                   />
                 </TabsContent>
@@ -332,7 +332,7 @@ button:hover {
                 <iframe
                     ref={iframeRef}
                     className="w-full h-full border bg-white rounded-md"
-                    title="Code Preview"
+                    title="Aperçu du Code"
                     sandbox="allow-scripts allow-modals"
                 />
              </div>

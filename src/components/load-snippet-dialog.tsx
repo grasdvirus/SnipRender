@@ -26,9 +26,9 @@ export function LoadSnippetDialog({ open, onOpenChange, snippets, onLoad, onDele
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Load Snippet</DialogTitle>
+          <DialogTitle>Charger un Extrait</DialogTitle>
           <DialogDescription>
-            Select a previously saved snippet to load into the editor.
+            Sélectionnez un extrait précédemment sauvegardé pour le charger dans l'éditeur.
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] -mx-4">
@@ -39,13 +39,13 @@ export function LoadSnippetDialog({ open, onOpenChange, snippets, onLoad, onDele
                     <div className="flex items-center justify-between gap-4 py-3">
                         <div>
                         <p className="font-semibold">{snippet.name}</p>
-                        <p className="text-sm text-muted-foreground">Saved on {snippet.date}</p>
+                        <p className="text-sm text-muted-foreground">Sauvegardé le {snippet.date}</p>
                         </div>
                         <div className="flex gap-2 shrink-0">
-                        <Button size="sm" onClick={() => onLoad(snippet)}>Load</Button>
+                        <Button size="sm" onClick={() => onLoad(snippet)}>Charger</Button>
                         <Button size="sm" variant="destructive" onClick={() => onDelete(snippet.id)}>
                             <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete</span>
+                            <span className="sr-only">Supprimer</span>
                         </Button>
                         </div>
                     </div>
@@ -53,12 +53,12 @@ export function LoadSnippetDialog({ open, onOpenChange, snippets, onLoad, onDele
                 </div>
               ))
             ) : (
-              <p className="text-center text-muted-foreground py-12">No saved snippets found.</p>
+              <p className="text-center text-muted-foreground py-12">Aucun extrait sauvegardé trouvé.</p>
             )}
           </div>
         </ScrollArea>
         <DialogFooter className="pt-4">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Fermer</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

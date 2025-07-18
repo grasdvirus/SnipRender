@@ -30,22 +30,22 @@ export function SaveSnippetDialog({ open, onOpenChange, onSave }: SaveSnippetDia
     <Dialog open={open} onOpenChange={(isOpen) => { onOpenChange(isOpen); if (!isOpen) setName(''); }}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Save Snippet</DialogTitle>
+          <DialogTitle>Sauvegarder l'Extrait</DialogTitle>
            <DialogDescription>
-            Enter a name for your snippet to save it for later use.
+            Entrez un nom pour votre extrait pour le sauvegarder pour une utilisation ultérieure.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">
-              Snippet Name
+              Nom de l'Extrait
             </Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={handleKeyDown} placeholder="e.g., Animated Button" autoFocus />
+            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={handleKeyDown} placeholder="ex: Bouton Animé" autoFocus />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleSave} disabled={!name.trim()}>Save</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Annuler</Button>
+          <Button onClick={handleSave} disabled={!name.trim()}>Sauvegarder</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
