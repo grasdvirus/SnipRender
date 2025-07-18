@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, RotateCcw, Save, Copy, Moon, Sun, Download, Upload, Trash2, Code, PanelLeft, FileCode, Layout, Code2, Eye } from 'lucide-react';
+import { ArrowUp, Play, RotateCcw, Save, Copy, Moon, Sun, Download, Upload, Trash2, Code, PanelLeft, FileCode, Layout, Code2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -77,6 +77,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("split");
+  const [showScrollTopButton, setShowScrollTopButton] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { toast } = useToast();
 
@@ -90,8 +91,20 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
     setSavedSnippets(saved);
 
     window.addEventListener('message', handleIframeError);
+
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTopButton(true);
+      } else {
+        setShowScrollTopButton(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
     return () => {
       window.removeEventListener('message', handleIframeError);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -129,6 +142,9 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
       <script>
         window.addEventListener('error', function(event) {
           window.parent.postMessage({ type: 'error', message: event.message }, '*');
+        });
+        window.addEventListener('unhandledrejection', function(event) {
+          window.parent.postMessage({ type: 'error', message: event.reason.message }, '*');
         });
       </script>
     `;
@@ -267,6 +283,13 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
     URL.revokeObjectURL(url);
   };
   
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
   const codeMap = {
     html: { code: htmlCode, setCode: setHtmlCode, lang: languages.markup },
     css: { code: cssCode, setCode: setCssCode, lang: languages.css },
@@ -281,7 +304,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
         <Editor
           value={code}
           onValueChange={newCode => setCode(newCode)}
-          highlight={code => highlight(code, lang, tab).split('\\n').map(line => `<span class="token-line">${line}</span>`).join('\\n')}
+          highlight={code => highlight(code, lang, tab).split('\n').map(line => `<span class="token-line">${line}</span>`).join('\n')}
           padding={10}
           className="editor"
           textareaId={`${tab}-editor`}
@@ -413,6 +436,23 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
       </div>
       <SaveSnippetDialog open={showSaveModal} onOpenChange={setShowSaveModal} onSave={saveSnippet} />
       <LoadSnippetDialog open={showLoadModal} onOpenChange={setShowLoadModal} snippets={savedSnippets} onLoad={loadSnippet} onDelete={deleteSnippet} />
+      {showScrollTopButton && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={scrollToTop}
+              className="fixed bottom-4 right-4 h-12 w-12 rounded-full shadow-lg"
+              size="icon"
+            >
+              <ArrowUp className="h-6 w-6" />
+              <span className="sr-only">Remonter en haut</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Remonter en haut</p>
+          </TooltipContent>
+        </Tooltip>
+      )}
     </TooltipProvider>
   );
 }
