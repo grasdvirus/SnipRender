@@ -304,7 +304,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
   const renderEditor = (tab: EditorTab) => {
     const { code, setCode, lang } = codeMap[tab];
     return (
-      <div className="editor-container">
+      <div className="editor-container scroll-hover">
         <Editor
           value={code}
           onValueChange={newCode => setCode(newCode)}
