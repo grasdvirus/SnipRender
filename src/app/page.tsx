@@ -400,7 +400,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
           </div>
         </header>
         <main className={cn(
-          "flex-1 grid gap-0 overflow-hidden",
+          "flex-1 grid gap-0",
           viewMode === 'split' && 'grid-cols-1 lg:grid-cols-2',
           viewMode === 'code' && 'grid-cols-1',
           viewMode === 'preview' && 'grid-cols-1',
