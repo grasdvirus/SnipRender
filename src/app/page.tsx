@@ -88,7 +88,23 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
     }
     const saved = JSON.parse(localStorage.getItem('codeSnippets') || '[]');
     setSavedSnippets(saved);
+
+    window.addEventListener('message', handleIframeError);
+    return () => {
+      window.removeEventListener('message', handleIframeError);
+    };
   }, []);
+
+  const handleIframeError = (event: MessageEvent) => {
+    if (event.data.type === 'error') {
+      toast({
+        variant: 'destructive',
+        title: "Erreur d'Exécution du Code",
+        description: event.data.message,
+        duration: 9000
+      });
+    }
+  };
 
   useEffect(() => {
     if (isDarkMode) {
@@ -104,10 +120,18 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
     const iframe = iframeRef.current;
     if (!iframe) return;
     
-    let processedJs = jsCode;
+    let processedJs = '';
     let finalHtml = htmlCode;
     let babelScript = '';
     let reactScripts = '';
+    
+    const errorHandlingScript = `
+      <script>
+        window.addEventListener('error', function(event) {
+          window.parent.postMessage({ type: 'error', message: event.message }, '*');
+        });
+      </script>
+    `;
 
     if (reactCode) {
       reactScripts = `
@@ -115,9 +139,21 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
         <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
       `;
       babelScript = `<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>`;
-      processedJs = `<script type="text/babel" data-presets="react">${reactCode}</script>`;
-    } else {
-      processedJs = `<script>${jsCode}</script>`
+      processedJs = `<script type="text/babel" data-presets="react">
+        try {
+          ${reactCode}
+        } catch (e) {
+          window.parent.postMessage({ type: 'error', message: e.message }, '*');
+        }
+      </script>`;
+    } else if (jsCode) {
+      processedJs = `<script>
+        try {
+          ${jsCode}
+        } catch (e) {
+          window.parent.postMessage({ type: 'error', message: e.message }, '*');
+        }
+      </script>`
     }
 
 
@@ -127,6 +163,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        ${errorHandlingScript}
         ${reactScripts}
         ${babelScript}
         <style>${cssCode}</style>
@@ -368,7 +405,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
                     ref={iframeRef}
                     className="w-full h-full border bg-white rounded-md"
                     title="Aperçu du Code"
-                    sandbox="allow-scripts allow-modals"
+                    sandbox="allow-scripts allow-modals allow-same-origin"
                 />
              </div>
           </div>
