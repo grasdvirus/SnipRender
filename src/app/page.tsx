@@ -99,10 +99,15 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
     let processedJs = jsCode;
     let finalHtml = htmlCode;
     let babelScript = '';
+    let reactScripts = '';
 
     if (reactCode) {
+      reactScripts = `
+        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+      `;
       babelScript = `<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>`;
-      processedJs += `\n<script type="text/babel">${reactCode}</script>`
+      processedJs += `\n<script type="text/babel">${reactCode}</script>`;
     } else {
       processedJs = `<script>${jsCode}</script>`
     }
@@ -114,8 +119,7 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+        ${reactScripts}
         ${babelScript}
         <style>${cssCode}</style>
       </head>
@@ -351,5 +355,3 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
     </TooltipProvider>
   );
 }
-
-    
