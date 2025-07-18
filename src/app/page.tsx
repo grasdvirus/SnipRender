@@ -417,10 +417,10 @@ ReactDOM.render(<App />, document.getElementById('root'));`);
                 <TabsTrigger value="react" className="text-cyan-400 data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-cyan-400 rounded-none">REACT</TabsTrigger>
               </TabsList>
               <div className="flex-1 overflow-auto">
-                <div className={cn("h-full", activeTab === 'html' ? 'block' : 'hidden')}>{renderEditor('html')}</div>
-                <div className={cn("h-full", activeTab === 'css' ? 'block' : 'hidden')}>{renderEditor('css')}</div>
-                <div className={cn("h-full", activeTab === 'js' ? 'block' : 'hidden')}>{renderEditor('js')}</div>
-                <div className={cn("h-full", activeTab === 'react' ? 'block' : 'hidden')}>{renderEditor('react')}</div>
+                <TabsContent value="html" className="h-full mt-0">{renderEditor('html')}</TabsContent>
+                <TabsContent value="css" className="h-full mt-0">{renderEditor('css')}</TabsContent>
+                <TabsContent value="js" className="h-full mt-0">{renderEditor('js')}</TabsContent>
+                <TabsContent value="react" className="h-full mt-0">{renderEditor('react')}</TabsContent>
               </div>
             </Tabs>
           </div>
